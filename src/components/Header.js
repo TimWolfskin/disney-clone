@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { auth, googleAuthProvider } from '../firebase';
+import { useEffect } from "react";
+import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { auth, provider } from "../firebase";
 import {
   selectUserName,
   selectUserPhoto,
@@ -12,7 +12,7 @@ import {
 
 const Header = (props) => {
   const dispatch = useDispatch();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const userName = useSelector(selectUserName);
   const userPhoto = useSelector(selectUserPhoto);
 
@@ -20,7 +20,7 @@ const Header = (props) => {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         setUser(user);
-        history.push("./Home.js");
+        navigate("/home")
       }
     });
   }, [userName]);
@@ -28,7 +28,7 @@ const Header = (props) => {
   const handleAuth = () => {
     if (!userName) {
       auth
-        .signInWithPopup(googleAuthProvider)
+        .signInWithPopup(provider)
         .then((result) => {
           setUser(result.user);
         })
@@ -40,7 +40,7 @@ const Header = (props) => {
         .signOut()
         .then(() => {
           dispatch(setSignOutState());
-          history.push("/");
+          navigate("/")
         })
         .catch((err) => alert(err.message));
     }
@@ -53,10 +53,8 @@ const Header = (props) => {
         email: user.email,
         photo: user.photoURL,
       })
-    )
-  }
-
-
+    );
+  };
 
   return (
     <Nav>
@@ -188,9 +186,9 @@ const NavMenu = styled.div`
       }
     }
   }
-  @media (max-width: 768px) {
+  /* @media (max-width: 768px) {
     display: none;
-  }
+  } */
 `;
 
 const Login = styled.a`
@@ -248,4 +246,4 @@ const SignOut = styled.div`
   }
 `;
 
-export default Header
+export default Header;
